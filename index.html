@@ -117,7 +117,7 @@
     }
 
     .hero {
-      padding: clamp(4rem, 9vw, 7.5rem) 0 clamp(3rem, 7vw, 5.5rem);
+      padding: clamp(4rem, 9vw, 7.5rem) 0 clamp(2rem, 4vw, 3rem);
       overflow: hidden;
     }
 
@@ -140,7 +140,7 @@
     .hero h1 {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(3rem, 7vw, 5.9rem);
+      font-size: clamp(2.7rem, 6vw, 5.1rem);
       font-weight: 500;
       letter-spacing: -0.045em;
       line-height: 0.98;
@@ -259,7 +259,7 @@
     .section h2 {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(2.2rem, 5vw, 3.7rem);
+      font-size: clamp(2rem, 4vw, 3.2rem);
       font-weight: 500;
       letter-spacing: -0.035em;
       line-height: 1;
@@ -270,6 +270,19 @@
       margin: 0;
       color: var(--ink-soft);
       font-size: 1.04rem;
+    }
+
+    #news {
+      padding-top: clamp(2rem, 4vw, 3rem);
+      padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
+    }
+
+    #news .section-heading {
+      margin-bottom: 1.35rem;
+    }
+
+    #publications {
+      padding-top: clamp(2rem, 4vw, 3rem);
     }
 
     .bio-grid {
@@ -455,19 +468,27 @@
     }
 
     .publication--featured {
-      grid-template-columns: 3rem minmax(0, 1.05fr) minmax(260px, 0.95fr);
+      grid-template-columns: 3rem minmax(0, 1.34fr) minmax(220px, 0.66fr);
       padding: 1.5rem;
       border-color: #d0b291;
     }
 
+    .publication--featured:hover {
+      transform: none;
+    }
+
     .publication-media {
-      align-self: center;
+      align-self: start;
+      width: 100%;
     }
 
     .publication-media video,
     .publication-media img {
       display: block;
       width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
       border-radius: 0.7rem;
       background: #0d1424;
       box-shadow: 0 8px 24px rgba(20, 33, 61, 0.14);
@@ -613,6 +634,8 @@
 
       .publication-media {
         grid-column: 2;
+        width: 73.333%;
+        justify-self: center;
       }
     }
 
@@ -633,6 +656,7 @@
 
       .publication-media {
         grid-column: 1;
+        width: 100%;
       }
 
       .news-item {
@@ -691,7 +715,7 @@
         <h1>Wenxi Chen</h1>
         <div class="hero-role">
           <p>
-            My Chinese name is <strong>陈文玺</strong>. My given name combines the Chinese characters for literature (Wen 文) and an imperial jade seal (xi 玺).
+            My Chinese name is <strong>陈文玺</strong>. My given name combines the Chinese characters for literature (Wen 文) and an imperial jade seal (Xi 玺).
           </p>
           <p>
             I am a Ph.D. student at Purdue University, where my research focuses on robot learning. I earned
@@ -748,7 +772,6 @@
             <span class="section-number">01</span>
             <h2>News</h2>
           </div>
-          <p class="section-lead">Recent research and professional updates.</p>
         </div>
 
         <ul class="news-list">
@@ -774,10 +797,6 @@
             <span class="section-number">02</span>
             <h2>Publications</h2>
           </div>
-          <p class="section-lead">
-            Selected work in robot learning, embodied intelligence, computer vision, and assistive robotics.
-            An asterisk (*) denotes equal contribution.
-          </p>
         </div>
 
         <ul class="research-list" aria-label="Research interests">
@@ -794,7 +813,7 @@
             <div>
               <h3>DREAM-Chunk: Test-time Scaling of Action Chunking with World Model for Stochastic Dynamics</h3>
               <p class="authors"><strong>Wenxi Chen</strong>, Kaidi Zhang, Chi Lin, Zhiyuan Zhang, Yu She, Yuejiang Liu, Raymond A. Yeh, Shaoshuai Mou, Yan Gu</p>
-              <p class="venue">NeurIPS 2026 <span class="status">Submitted</span></p>
+              <p class="venue"> <span class="status">Under Review</span></p>
               <div class="pub-actions">
                 <a class="pub-link" href="https://arxiv.org/pdf/2606.18589" target="_blank" rel="noopener noreferrer">Paper ↗</a>
                 <a class="pub-link" href="https://wenxichen2746.github.io/DREAM-Chunk/" target="_blank" rel="noopener noreferrer">Project page ↗</a>
@@ -802,8 +821,8 @@
               </div>
             </div>
             <div class="publication-media">
-              <video autoplay muted loop playsinline controls preload="auto" aria-label="DREAM-Chunk Franka Panda robot demonstration">
-                <source src="videos/dream_chunk_panda_pi_3samplingnumbers_web_30s.mp4" type="video/mp4">
+              <video autoplay muted loop playsinline controls preload="metadata" loading="lazy" aria-label="DREAM-Chunk Franka Panda robot demonstration">
+                <source src="videos/dream_chunk_panda_preview_10s.mp4" type="video/mp4">
                 Your browser does not support embedded video.
               </video>
             </div>
@@ -813,7 +832,7 @@
             <div>
               <h3>Rethink Action Chunking in VLA Through Human Motor Control</h3>
               <p class="authors"><strong>Wenxi Chen</strong>, Yuejiang Liu, Zijian He, Shaoshuai Mou, Yan Gu</p>
-              <p class="venue">NeurIPS 2026 <span class="status">Submitted</span></p>
+              <p class="venue"><span class="status">Under Review</span></p>
               <div class="pub-actions"><!-- Add links here later. --></div>
             </div>
           </article>
@@ -822,7 +841,7 @@
             <div>
               <h3>Grounded Vision–Language Motion Planning Framework for Collaborative Robot Inscription</h3>
               <p class="authors">Ruixiang Wang, <strong>Wenxi Chen</strong>, Zehui Lu, Yan Gu, Shaoshuai Mou</p>
-              <p class="venue">IEEE Transactions on Automation Science and Engineering, 2026 <span class="status">Submitted</span></p>
+              <p class="venue"><span class="status">Under Review</span></p>
               <div class="pub-actions"><!-- Add links here later. --></div>
             </div>
           </article>
