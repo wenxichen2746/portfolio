@@ -537,6 +537,66 @@
       text-decoration: none;
     }
 
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .project-card {
+      min-width: 0;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      box-shadow: 0 10px 35px rgba(20, 33, 61, 0.045);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-2px);
+      border-color: #d0b291;
+      box-shadow: 0 12px 30px rgba(20, 33, 61, 0.07);
+    }
+
+    .project-media {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: #0d1424;
+    }
+
+    .project-copy {
+      padding: 1rem;
+    }
+
+    .project-copy p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .project-copy .status {
+      display: inline-block;
+      margin: 0 0.35rem 0.3rem 0;
+      vertical-align: middle;
+    }
+
+    .project-copy .status--year {
+      color: #596273;
+      background: #e8e9ec;
+    }
+
+    .project-place {
+      display: block;
+      margin-top: 0.55rem;
+      color: var(--ink);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
     .teaching-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -647,6 +707,10 @@
         grid-template-columns: 1fr;
       }
 
+      .project-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .publication--with-media {
         grid-template-columns: 3rem minmax(0, 1fr);
       }
@@ -681,6 +745,10 @@
       .news-item {
         grid-template-columns: 1fr;
         gap: 0.3rem;
+      }
+
+      .project-grid {
+        grid-template-columns: 1fr;
       }
 
       .hero-links {
@@ -721,6 +789,7 @@
         <li><a href="#top">Bio</a></li>
         <li><a href="#news">News</a></li>
         <li><a href="#publications">Publications</a></li>
+        <li><a href="#projects">Other Projects</a></li>
         <li><a href="#activities">Academic Activities</a></li>
       </ul>
     </div>
@@ -865,12 +934,18 @@
             </div>
           </article>
 
-          <article class="publication">
+          <article class="publication publication--with-media" style="--publication-media-width: 19.2rem;">
             <div>
               <h3>Grounded Vision–Language Motion Planning Framework for Collaborative Robot Inscription</h3>
               <p class="authors">Ruixiang Wang, <strong>Wenxi Chen</strong>, Zehui Lu, Yan Gu, Shaoshuai Mou</p>
               <p class="venue"><span class="status">Under Review</span></p>
               <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+            <div class="publication-media">
+              <video autoplay muted loop playsinline controls preload="metadata" aria-label="Robot inscription demonstration">
+                <source src="videos/Inscription2026video.mp4" type="video/mp4">
+                Your browser does not support embedded video.
+              </video>
             </div>
           </article>
 
@@ -957,11 +1032,76 @@
       </div>
     </section>
 
-    <section class="section" id="activities">
+    <section class="section" id="projects">
       <div class="container">
         <div class="section-heading">
           <div>
             <span class="section-number">03</span>
+            <h2>Other Projects</h2>
+          </div>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card">
+            <video class="project-media" autoplay muted loop playsinline preload="metadata" aria-label="Humanoid robot learning from human demonstration">
+              <source src="videos/proj0_humanoid_demonstration.mp4" type="video/mp4">
+              Your browser does not support embedded video.
+            </video>
+            <div class="project-copy">
+              <p><span class="status">Ongoing</span>Using human demonstrations to train humanoid robots.</p>
+              <span class="project-place">Purdue University</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <video class="project-media" autoplay muted loop playsinline preload="metadata" aria-label="Indoor semantic navigation demonstration">
+              <source src="videos/proj1_indoor_navigation_5s.mp4" type="video/mp4">
+              Your browser does not support embedded video.
+            </video>
+            <div class="project-copy">
+              <p><span class="status status--year">2025</span>Built semantic navigation systemto find a room without a map.</p>
+              <span class="project-place">Purdue University</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <video class="project-media" autoplay muted loop playsinline preload="metadata" aria-label="Designed and 3D-printed humanoid robot walking">
+              <source src="videos/proj3_humanoid_walk_5s.mp4" type="video/mp4">
+              Your browser does not support embedded video.
+            </video>
+            <div class="project-copy">
+              <p><span class="status status--year">2023</span>Designed, printed, and taught a humanoid robot to walk.</p>
+              <span class="project-place">Columbia University</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <video class="project-media" autoplay muted loop playsinline preload="metadata" aria-label="Computer vision behavior analysis system">
+              <source src="videos/proj2_behavior_analysis_5s.mp4" type="video/mp4">
+              Your browser does not support embedded video.
+            </video>
+            <div class="project-copy">
+              <p><span class="status status--year">2022</span>Built a computer vision system for behavior analysis.</p>
+              <span class="project-place">Columbia University Department of Psychiatry</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <img class="project-media" src="images/proj4_build_drone.avif" alt="Custom-built drone based on a blueprint" loading="lazy">
+            <div class="project-copy">
+              <p><span class="status status--year">2021</span>Built and controlled a drone from a blueprint.</p>
+              <span class="project-place">Tsinghua University</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="activities">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">04</span>
             <h2>Academic Activities</h2>
           </div>
         </div>
