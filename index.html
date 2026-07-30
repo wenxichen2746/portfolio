@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Wenxi Chen — PhD student in robotics, robot learning, and embodied AI at Purdue University.">
+  <title>Wenxi Chen | Robotics Researcher</title>
+  <link rel="stylesheet" href="assets/css/academicons.min.css">
+  <style>
+    :root {
+      --ink: #14213d;
+      --ink-soft: #40506d;
+      --paper: #f7f5ef;
+      --card: #ffffff;
+      --accent: #b45309;
+      --accent-dark: #873f08;
+      --accent-pale: #fff3df;
+      --line: #dedbd1;
+      --navy-pale: #e9eef6;
+      --shadow: 0 18px 50px rgba(20, 33, 61, 0.09);
+      --max-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 10%, rgba(180, 83, 9, 0.07), transparent 30rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    a:hover {
+      color: var(--accent-dark);
+    }
+
+    .skip-link {
+      position: fixed;
+      top: -5rem;
+      left: 1rem;
+      z-index: 100;
+      padding: 0.7rem 1rem;
+      color: white;
+      background: var(--ink);
+      border-radius: 0.4rem;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+
+    .container {
+      width: min(var(--max-width), calc(100% - 2.5rem));
+      margin-inline: auto;
+    }
+
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(247, 245, 239, 0.93);
+      border-bottom: 1px solid rgba(222, 219, 209, 0.9);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      min-height: 4.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .brand {
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(0.8rem, 2vw, 1.7rem);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+      font-weight: 650;
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .hero {
+      padding: clamp(4rem, 9vw, 7.5rem) 0 clamp(3rem, 7vw, 5.5rem);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.75fr);
+      gap: clamp(2.5rem, 7vw, 6.5rem);
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.85rem;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3rem, 7vw, 5.9rem);
+      font-weight: 500;
+      letter-spacing: -0.045em;
+      line-height: 0.98;
+    }
+
+    .hero-role {
+      max-width: 42rem;
+      margin: 1.5rem 0 0;
+      color: var(--ink-soft);
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-height: 2.8rem;
+      padding: 0.68rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: var(--card);
+      box-shadow: 0 5px 16px rgba(20, 33, 61, 0.06);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      border-color: #c9a57f;
+      color: var(--accent-dark);
+      box-shadow: 0 9px 22px rgba(20, 33, 61, 0.1);
+    }
+
+    .button svg,
+    .button .ai {
+      width: 1.15rem;
+      height: 1.15rem;
+      font-size: 1.15rem;
+      flex: 0 0 auto;
+    }
+
+    .button--primary {
+      color: white;
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .button--primary:hover {
+      color: white;
+      background: #243556;
+      border-color: #243556;
+    }
+
+    .contact-label {
+      cursor: default;
+    }
+
+    .portrait-wrap {
+      position: relative;
+      max-width: 360px;
+      justify-self: end;
+    }
+
+    .portrait-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -1.1rem 1.3rem 1.1rem -1.1rem;
+      z-index: -1;
+      border: 1px solid #d7b68f;
+      border-radius: 44% 56% 46% 54% / 55% 42% 58% 45%;
+    }
+
+    .portrait {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 44% 56% 46% 54% / 55% 42% 58% 45%;
+      box-shadow: var(--shadow);
+    }
+
+    .section {
+      padding: clamp(3.5rem, 7vw, 6rem) 0;
+      scroll-margin-top: 4.5rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
+      gap: 2rem;
+      margin-bottom: 2.7rem;
+      align-items: end;
+    }
+
+    .section-number {
+      display: block;
+      margin-bottom: 0.35rem;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.2rem, 5vw, 3.7rem);
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
+
+    .section-lead {
+      max-width: 45rem;
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 1.04rem;
+    }
+
+    .bio-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+      gap: 1.3rem;
+    }
+
+    .panel {
+      padding: clamp(1.5rem, 4vw, 2.3rem);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 1.15rem;
+      box-shadow: 0 10px 35px rgba(20, 33, 61, 0.045);
+    }
+
+    .panel p:first-child {
+      margin-top: 0;
+    }
+
+    .panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .research-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 1.4rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .research-list li {
+      padding: 0.35rem 0.7rem;
+      color: var(--ink-soft);
+      background: var(--navy-pale);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    #publications .research-list {
+      margin-bottom: 2rem;
+    }
+
+    .quick-facts {
+      display: grid;
+      gap: 1rem;
+      margin: 0;
+    }
+
+    .quick-facts div {
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .quick-facts div:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .quick-facts dt {
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .quick-facts dd {
+      margin: 0.2rem 0 0;
+      font-weight: 650;
+    }
+
+    .publication-list {
+      display: grid;
+      gap: 1rem;
+      counter-reset: publications;
+    }
+
+    .news-list {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      box-shadow: 0 10px 35px rgba(20, 33, 61, 0.045);
+    }
+
+    .news-item {
+      display: grid;
+      grid-template-columns: 8rem minmax(0, 1fr);
+      gap: 1.5rem;
+      padding: 1.3rem 1.5rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .news-item:last-child {
+      border-bottom: 0;
+    }
+
+    .news-date {
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .news-item p {
+      margin: 0;
+    }
+
+    .publication {
+      position: relative;
+      display: grid;
+      grid-template-columns: 3rem minmax(0, 1fr);
+      gap: 1.1rem;
+      padding: 1.4rem 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 0.95rem;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+      counter-increment: publications;
+    }
+
+    .publication:hover {
+      transform: translateY(-2px);
+      border-color: #d0b291;
+      box-shadow: 0 12px 30px rgba(20, 33, 61, 0.07);
+    }
+
+    .publication::before {
+      content: counter(publications, decimal-leading-zero);
+      color: var(--accent);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .publication h3 {
+      margin: 0 0 0.45rem;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.17rem;
+      line-height: 1.35;
+    }
+
+    .authors {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .venue {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+      margin: 0.65rem 0 0;
+      color: var(--ink);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .status {
+      padding: 0.16rem 0.5rem;
+      color: var(--accent-dark);
+      background: var(--accent-pale);
+      border-radius: 999px;
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .status--accepted {
+      color: #17603a;
+      background: #e2f5e9;
+    }
+
+    .publication--featured {
+      grid-template-columns: 3rem minmax(0, 1.05fr) minmax(260px, 0.95fr);
+      padding: 1.5rem;
+      border-color: #d0b291;
+    }
+
+    .publication-media {
+      align-self: center;
+    }
+
+    .publication-media video,
+    .publication-media img {
+      display: block;
+      width: 100%;
+      border-radius: 0.7rem;
+      background: #0d1424;
+      box-shadow: 0 8px 24px rgba(20, 33, 61, 0.14);
+    }
+
+    .media-caption {
+      margin: 0.55rem 0 0;
+      color: var(--ink-soft);
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .pub-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+
+    .pub-actions:empty {
+      display: none;
+    }
+
+    .pub-link {
+      font-size: 0.8rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .teaching-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .teaching-card {
+      min-height: 100%;
+    }
+
+    .teaching-card .year {
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .teaching-card h3 {
+      margin: 0.55rem 0 0.45rem;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.3rem;
+      line-height: 1.25;
+    }
+
+    .teaching-card p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+    }
+
+    .empty-state {
+      padding: clamp(2rem, 6vw, 4rem);
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(233, 238, 246, 0.75), rgba(255, 243, 223, 0.72));
+      border: 1px dashed #c7b79f;
+      border-radius: 1rem;
+    }
+
+    .empty-state h3 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.45rem;
+    }
+
+    .empty-state p {
+      max-width: 35rem;
+      margin: 0.55rem auto 0;
+      color: var(--ink-soft);
+    }
+
+    footer {
+      padding: 2rem 0;
+      color: var(--ink-soft);
+      background: var(--ink);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: white;
+    }
+
+    @media (max-width: 820px) {
+      .nav-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.45rem;
+        padding: 0.75rem 0;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.2rem;
+      }
+
+      .hero-grid,
+      .bio-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .portrait-wrap {
+        width: min(72vw, 330px);
+        justify-self: start;
+        grid-row: 1;
+      }
+
+      .section {
+        scroll-margin-top: 7.5rem;
+      }
+
+      .section-heading {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .teaching-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .publication--featured {
+        grid-template-columns: 3rem minmax(0, 1fr);
+      }
+
+      .publication-media {
+        grid-column: 2;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        width: min(var(--max-width), calc(100% - 1.4rem));
+      }
+
+      .publication {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+        padding: 1.2rem;
+      }
+
+      .publication--featured {
+        grid-template-columns: 1fr;
+      }
+
+      .publication-media {
+        grid-column: 1;
+      }
+
+      .news-item {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+      }
+
+      .hero-links {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .button {
+        justify-content: center;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="container nav-inner">
+      <a class="brand" href="#top">Wenxi Chen</a>
+      <ul class="nav-links">
+        <li><a href="#top">Bio</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#publications">Publications</a></li>
+        <li><a href="#activities">Academic Activities</a></li>
+        <li><a href="#talks">Talks</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">Robotics · Learning · Embodied AI</p>
+        <h1>Wenxi Chen</h1>
+        <div class="hero-role">
+          <p>
+            My Chinese name is <strong>陈文玺</strong>. My given name combines the Chinese characters for literature (Wen 文) and an imperial jade seal (xi 玺).
+          </p>
+          <p>
+            I am a Ph.D. student at Purdue University, where my research focuses on robot learning. I earned
+            my M.S. in Mechanical Engineering from Columbia University in 2022, with a concentration in
+            robotics and control. Before that, I received my bachelor’s degree in Aircraft Engineering from
+            Huazhong University of Science and Technology.
+          </p>
+          <p>
+            My research interests center on data-driven robot learning, with the long-term goal of helping
+            advance physical intelligence toward human-level capabilities.
+          </p>
+        </div>
+        <div class="hero-links" aria-label="Professional links">
+          <a class="button button--primary" href="files/WenxiChenResume_research2026.pdf">
+            <i class="ai ai-cv" aria-hidden="true"></i>
+            Curriculum Vitae
+          </a>
+          <a class="button" href="https://scholar.google.com/citations?user=qsDdXC4AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">
+            <i class="ai ai-google-scholar" aria-hidden="true"></i>
+            Google Scholar
+          </a>
+          <a class="button" href="https://www.linkedin.com/in/wenxi-chen/" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29ZM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.1 20.45H3.54V8.98H7.1v11.47Z"/>
+            </svg>
+            LinkedIn
+          </a>
+          <a class="button" href="https://github.com/wenxichen2746" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.11.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.29-1.69-1.29-1.69-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.4-1.26.74-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18A10.94 10.94 0 0 1 12 6.12c.98 0 1.95.13 2.87.39 2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.71 5.38-5.29 5.67.42.36.79 1.07.79 2.16v3.24c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/>
+            </svg>
+            GitHub
+          </a>
+          <span class="button contact-label" aria-label="Email: chen4803 at purdue dot edu">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M3 4.75h18A2.25 2.25 0 0 1 23.25 7v10A2.25 2.25 0 0 1 21 19.25H3A2.25 2.25 0 0 1 .75 17V7A2.25 2.25 0 0 1 3 4.75Zm0 1.5a.75.75 0 0 0-.75.75v.34l9.75 5.2 9.75-5.2V7a.75.75 0 0 0-.75-.75H3Zm18.75 2.79-9.4 5.01a.75.75 0 0 1-.7 0l-9.4-5.01V17c0 .41.34.75.75.75h18a.75.75 0 0 0 .75-.75V9.04Z"/>
+            </svg>
+            chen4803 at purdue dot edu
+          </span>
+        </div>
+      </div>
+
+      <div class="portrait-wrap">
+        <img class="portrait" src="images/WenxiChen_Headshot.jpg" alt="Portrait of Wenxi Chen">
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="section" id="news">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">01</span>
+            <h2>News</h2>
+          </div>
+          <p class="section-lead">Recent research and professional updates.</p>
+        </div>
+
+        <ul class="news-list">
+          <li class="news-item">
+            <time class="news-date" datetime="2026-08">August 2026</time>
+            <p>I will join <strong>Foundation Robotics</strong> in San Francisco, CA, this fall as a research intern.</p>
+          </li>
+          <li class="news-item">
+            <time class="news-date" datetime="2026-07">July 2026</time>
+            <p>
+              I was selected to give a lightning talk at the Midwest Machine Learning Symposium, presenting
+              our recent position paper accepted at ICML 2026.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="publications">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">02</span>
+            <h2>Publications</h2>
+          </div>
+          <p class="section-lead">
+            Selected work in robot learning, embodied intelligence, computer vision, and assistive robotics.
+            An asterisk (*) denotes equal contribution.
+          </p>
+        </div>
+
+        <ul class="research-list" aria-label="Research interests">
+          <li>Vision-Language-Action Models</li>
+          <li>World Models</li>
+          <li>Humanoid Robotics</li>
+          <li>Reinforcement Learning</li>
+          <li>Robot Safety</li>
+          <li>Uncertainty Quantification</li>
+        </ul>
+
+        <div class="publication-list">
+          <article class="publication publication--featured">
+            <div>
+              <h3>DREAM-Chunk: Test-time Scaling of Action Chunking with World Model for Stochastic Dynamics</h3>
+              <p class="authors"><strong>Wenxi Chen</strong>, Kaidi Zhang, Chi Lin, Zhiyuan Zhang, Yu She, Yuejiang Liu, Raymond A. Yeh, Shaoshuai Mou, Yan Gu</p>
+              <p class="venue">NeurIPS 2026 <span class="status">Submitted</span></p>
+              <div class="pub-actions">
+                <a class="pub-link" href="https://arxiv.org/pdf/2606.18589" target="_blank" rel="noopener noreferrer">Paper ↗</a>
+                <a class="pub-link" href="https://wenxichen2746.github.io/DREAM-Chunk/" target="_blank" rel="noopener noreferrer">Project page ↗</a>
+                <a class="pub-link" href="https://github.com/wenxichen2746/DREAM-Chunk-Kinetix/tree/main" target="_blank" rel="noopener noreferrer">Code ↗</a>
+              </div>
+            </div>
+            <div class="publication-media">
+              <video autoplay muted loop playsinline controls preload="auto" aria-label="DREAM-Chunk Franka Panda robot demonstration">
+                <source src="videos/dream_chunk_panda_pi_3samplingnumbers_web_30s.mp4" type="video/mp4">
+                Your browser does not support embedded video.
+              </video>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>Rethink Action Chunking in VLA Through Human Motor Control</h3>
+              <p class="authors"><strong>Wenxi Chen</strong>, Yuejiang Liu, Zijian He, Shaoshuai Mou, Yan Gu</p>
+              <p class="venue">NeurIPS 2026 <span class="status">Submitted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>Grounded Vision–Language Motion Planning Framework for Collaborative Robot Inscription</h3>
+              <p class="authors">Ruixiang Wang, <strong>Wenxi Chen</strong>, Zehui Lu, Yan Gu, Shaoshuai Mou</p>
+              <p class="venue">IEEE Transactions on Automation Science and Engineering, 2026 <span class="status">Submitted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>Position: Modular Safety Guardrails Are Necessary for Foundation-Model-Enabled Robots in the Real World</h3>
+              <p class="authors">Joonkyung Kim*, <strong>Wenxi Chen*</strong>, Davood Soleymanzadeh*, Yi Ding, Xiangbo Gao, Zhengzhong Tu, Ruqi Zhang, Fan Fei, Sushant Veer, Yiwei Lyu, Minghui Zheng, Yan Gu</p>
+              <p class="venue">ICML 2026 Position Paper Track <span class="status status--accepted">Accepted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>Towards Versatile Humanoid Table Tennis: Unified Reinforcement Learning with Prediction Augmentation</h3>
+              <p class="authors">Muqun Hu*, <strong>Wenxi Chen*</strong>, Wenjing Li*, Falak Mandali, Zijian He, Renhong Zhang, Praveen Krisna, Katherine Christian, Leo Benaharon, Dizhi Ma, Karthik Ramani, Yan Gu</p>
+              <p class="venue">IEEE ICRA 2026 <span class="status status--accepted">Accepted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>Model-agnostic Meta-learning for Adaptive Gait Phase and Terrain Geometry Estimation with Wearable Soft Sensors</h3>
+              <p class="authors">Zenan Zhu*, <strong>Wenxi Chen*</strong>, Pei-Chun Kao, Janelle Clark, Lily Behnke, Rebecca Kramer-Bottiglio, Holly Yanco, Yan Gu</p>
+              <p class="venue">IEEE Robotics and Automation Letters, 2026 <span class="status status--accepted">Accepted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>Leveraging Perturbation Robustness to Enhance Out-of-Distribution Detection</h3>
+              <p class="authors"><strong>Wenxi Chen</strong>, Raymond Yeh, Shaoshuai Mou, Yan Gu</p>
+              <p class="venue">CVPR 2025 <span class="status status--accepted">Accepted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>ChatEMG: Synthetic Data Generation to Control a Robotic Hand Orthosis for Stroke</h3>
+              <p class="authors">Jingxi Xu, Runsheng Wang, Siqi Shang, Ava Chen, Lauren Winterbottom, To-Liang Hsu, <strong>Wenxi Chen</strong>, Khondoker Ahmed, Pedro Leandro La Rotta, Xinyue Zhu, Dawn M. Nilsen, Joel Stein, Matei Ciocarlie</p>
+              <p class="venue">IEEE Robotics and Automation Letters, 2024 <span class="status status--accepted">Accepted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+
+          <article class="publication">
+            <div>
+              <h3>Meta-Learning for Fast Adaptation in Intent Inferral on a Robotic Hand Orthosis for Stroke</h3>
+              <p class="authors">Pedro Leandro La Rotta, Jingxi Xu, Ava Chen, Lauren Winterbottom, <strong>Wenxi Chen</strong>, Dawn Nilsen, Joel Stein, Matei Ciocarlie</p>
+              <p class="venue">IEEE/RSJ IROS 2024 <span class="status status--accepted">Accepted</span></p>
+              <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="activities">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">03</span>
+            <h2>Academic Activities</h2>
+          </div>
+          <p class="section-lead">
+            Teaching, course support, and professional service across robotics and mechanical engineering.
+          </p>
+        </div>
+
+        <div class="teaching-grid">
+          <article class="panel teaching-card">
+            <span class="year">Spring 2024</span>
+            <h3>Statics</h3>
+            <p>Teaching Assistant · Purdue University</p>
+          </article>
+          <article class="panel teaching-card">
+            <span class="year">Fall 2023</span>
+            <h3>Machine Design Lab</h3>
+            <p>Teaching Assistant · Purdue University</p>
+          </article>
+          <article class="panel teaching-card">
+            <span class="year">Fall 2022</span>
+            <h3>Robotics Studio</h3>
+            <p>Course Assistant · Columbia University</p>
+          </article>
+          <article class="panel teaching-card">
+            <span class="year">Academic Service</span>
+            <h3>Peer Reviewer</h3>
+            <p>
+              IEEE Robotics and Automation Letters (RA-L), IEEE International Conference on Robotics and
+              Automation (ICRA), and IEEE International Conference on Humanoid Robots (Humanoids)
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="talks">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">04</span>
+            <h2>Talks</h2>
+          </div>
+          <p class="section-lead">
+            Invited talks, research presentations, and conference appearances.
+          </p>
+        </div>
+
+        <div class="empty-state">
+          <h3>Talks will be added soon.</h3>
+          <p>This section is ready for presentation titles, venues, dates, slides, and recorded videos.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>© <span id="current-year">2026</span> Wenxi Chen</span>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("current-year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
