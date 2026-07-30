@@ -117,14 +117,15 @@
     }
 
     .hero {
-      padding: clamp(4rem, 9vw, 7.5rem) 0 clamp(2rem, 4vw, 3rem);
+      padding: clamp(2rem, 4vw, 3.25rem) 0 clamp(1.25rem, 2.5vw, 2rem);
       overflow: hidden;
     }
 
     .hero-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.75fr);
-      gap: clamp(2.5rem, 7vw, 6.5rem);
+      grid-template-columns: minmax(0, 1fr) 270px;
+      column-gap: clamp(2rem, 4vw, 3.5rem);
+      row-gap: 0.75rem;
       align-items: center;
     }
 
@@ -147,17 +148,20 @@
     }
 
     .hero-role {
-      max-width: 42rem;
-      margin: 1.5rem 0 0;
+      max-width: none;
+      margin: 0;
       color: var(--ink-soft);
-      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+      line-height: 1.55;
     }
 
     .hero-links {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
-      margin-top: 2rem;
+      margin-top: 0.5rem;
+      grid-column: 1 / -1;
+      width: 100%;
     }
 
     .button {
@@ -210,7 +214,7 @@
 
     .portrait-wrap {
       position: relative;
-      max-width: 360px;
+      max-width: 270px;
       justify-self: end;
     }
 
@@ -234,7 +238,7 @@
     }
 
     .section {
-      padding: clamp(3.5rem, 7vw, 6rem) 0;
+      padding: clamp(2.25rem, 4vw, 3.5rem) 0;
       scroll-margin-top: 4.5rem;
       border-top: 1px solid var(--line);
     }
@@ -243,7 +247,7 @@
       display: grid;
       grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
       gap: 2rem;
-      margin-bottom: 2.7rem;
+      margin-bottom: 1.75rem;
       align-items: end;
     }
 
@@ -273,8 +277,8 @@
     }
 
     #news {
-      padding-top: clamp(2rem, 4vw, 3rem);
-      padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
+      padding-top: clamp(1.5rem, 2.5vw, 2rem);
+      padding-bottom: clamp(1.25rem, 2vw, 1.75rem);
     }
 
     #news .section-heading {
@@ -282,7 +286,11 @@
     }
 
     #publications {
-      padding-top: clamp(2rem, 4vw, 3rem);
+      padding-top: clamp(1.5rem, 2.5vw, 2rem);
+    }
+
+    #activities .section-heading {
+      grid-template-columns: 1fr;
     }
 
     .bio-grid {
@@ -610,7 +618,7 @@
       }
 
       .portrait-wrap {
-        width: min(72vw, 330px);
+        width: min(54vw, 247.5px);
         justify-self: start;
         grid-row: 1;
       }
@@ -703,7 +711,6 @@
         <li><a href="#news">News</a></li>
         <li><a href="#publications">Publications</a></li>
         <li><a href="#activities">Academic Activities</a></li>
-        <li><a href="#talks">Talks</a></li>
       </ul>
     </div>
   </nav>
@@ -711,12 +718,7 @@
   <header class="hero" id="top">
     <div class="container hero-grid">
       <div>
-        <p class="eyebrow">Robotics · Learning · Embodied AI</p>
-        <h1>Wenxi Chen</h1>
         <div class="hero-role">
-          <p>
-            My Chinese name is <strong>陈文玺</strong>. My given name combines the Chinese characters for literature (Wen 文) and an imperial jade seal (Xi 玺).
-          </p>
           <p>
             I am a Ph.D. student at Purdue University, where my research focuses on robot learning. I earned
             my M.S. in Mechanical Engineering from Columbia University in 2022, with a concentration in
@@ -724,42 +726,46 @@
             Huazhong University of Science and Technology.
           </p>
           <p>
+            My Chinese name is <strong>陈文玺</strong>. My given name combines the Chinese characters for literature (Wen 文) and an imperial jade seal (Xi 玺).
+          </p>
+          <p>
             My research interests center on data-driven robot learning, with the long-term goal of helping
             advance physical intelligence toward human-level capabilities.
           </p>
-        </div>
-        <div class="hero-links" aria-label="Professional links">
-          <a class="button button--primary" href="files/WenxiChenResume_research2026.pdf">
-            <i class="ai ai-cv" aria-hidden="true"></i>
-            Curriculum Vitae
-          </a>
-          <a class="button" href="https://scholar.google.com/citations?user=qsDdXC4AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">
-            <i class="ai ai-google-scholar" aria-hidden="true"></i>
-            Google Scholar
-          </a>
-          <a class="button" href="https://www.linkedin.com/in/wenxi-chen/" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29ZM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.1 20.45H3.54V8.98H7.1v11.47Z"/>
-            </svg>
-            LinkedIn
-          </a>
-          <a class="button" href="https://github.com/wenxichen2746" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.11.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.29-1.69-1.29-1.69-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.4-1.26.74-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18A10.94 10.94 0 0 1 12 6.12c.98 0 1.95.13 2.87.39 2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.71 5.38-5.29 5.67.42.36.79 1.07.79 2.16v3.24c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/>
-            </svg>
-            GitHub
-          </a>
-          <span class="button contact-label" aria-label="Email: chen4803 at purdue dot edu">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M3 4.75h18A2.25 2.25 0 0 1 23.25 7v10A2.25 2.25 0 0 1 21 19.25H3A2.25 2.25 0 0 1 .75 17V7A2.25 2.25 0 0 1 3 4.75Zm0 1.5a.75.75 0 0 0-.75.75v.34l9.75 5.2 9.75-5.2V7a.75.75 0 0 0-.75-.75H3Zm18.75 2.79-9.4 5.01a.75.75 0 0 1-.7 0l-9.4-5.01V17c0 .41.34.75.75.75h18a.75.75 0 0 0 .75-.75V9.04Z"/>
-            </svg>
-            chen4803 at purdue dot edu
-          </span>
         </div>
       </div>
 
       <div class="portrait-wrap">
         <img class="portrait" src="images/WenxiChen_Headshot.jpg" alt="Portrait of Wenxi Chen">
+      </div>
+
+      <div class="hero-links" aria-label="Professional links">
+        <a class="button button--primary" href="files/WenxiChenResume_research2026.pdf">
+          <i class="ai ai-cv" aria-hidden="true"></i>
+          Curriculum Vitae
+        </a>
+        <a class="button" href="https://scholar.google.com/citations?user=qsDdXC4AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">
+          <i class="ai ai-google-scholar" aria-hidden="true"></i>
+          Google Scholar
+        </a>
+        <a class="button" href="https://www.linkedin.com/in/wenxi-chen/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29ZM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.1 20.45H3.54V8.98H7.1v11.47Z"/>
+          </svg>
+          LinkedIn
+        </a>
+        <a class="button" href="https://github.com/wenxichen2746" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.11.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.29-1.69-1.29-1.69-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.4-1.26.74-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18A10.94 10.94 0 0 1 12 6.12c.98 0 1.95.13 2.87.39 2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.71 5.38-5.29 5.67.42.36.79 1.07.79 2.16v3.24c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/>
+          </svg>
+          GitHub
+        </a>
+        <span class="button contact-label" aria-label="Email: chen4803 at purdue dot edu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M3 4.75h18A2.25 2.25 0 0 1 23.25 7v10A2.25 2.25 0 0 1 21 19.25H3A2.25 2.25 0 0 1 .75 17V7A2.25 2.25 0 0 1 3 4.75Zm0 1.5a.75.75 0 0 0-.75.75v.34l9.75 5.2 9.75-5.2V7a.75.75 0 0 0-.75-.75H3Zm18.75 2.79-9.4 5.01a.75.75 0 0 1-.7 0l-9.4-5.01V17c0 .41.34.75.75.75h18a.75.75 0 0 0 .75-.75V9.04Z"/>
+          </svg>
+          chen4803 at purdue dot edu
+        </span>
       </div>
     </div>
   </header>
@@ -776,11 +782,19 @@
 
         <ul class="news-list">
           <li class="news-item">
-            <time class="news-date" datetime="2026-08">August 2026</time>
+            <time class="news-date" datetime="2026-08">Aug 2026</time>
             <p>I will join <strong>Foundation Robotics</strong> in San Francisco, CA, this fall as a research intern.</p>
           </li>
           <li class="news-item">
-            <time class="news-date" datetime="2026-07">July 2026</time>
+            <time class="news-date" datetime="2026-07">Jul 2026</time>
+            <p>
+              Our IROS 2026 workshop on
+              <a href="https://iros-2026-athletic-humanoid.github.io/workshop/" target="_blank" rel="noopener noreferrer"><strong>AthleticHumanoid</strong></a>
+              is calling for paper submissions!
+            </p>
+          </li>
+          <li class="news-item">
+            <time class="news-date" datetime="2026-07">Jun 2026</time>
             <p>
               I was selected to give a lightning talk at the Midwest Machine Learning Symposium, presenting
               our recent position paper accepted at ICML 2026.
@@ -851,7 +865,9 @@
               <h3>Position: Modular Safety Guardrails Are Necessary for Foundation-Model-Enabled Robots in the Real World</h3>
               <p class="authors">Joonkyung Kim*, <strong>Wenxi Chen*</strong>, Davood Soleymanzadeh*, Yi Ding, Xiangbo Gao, Zhengzhong Tu, Ruqi Zhang, Fan Fei, Sushant Veer, Yiwei Lyu, Minghui Zheng, Yan Gu</p>
               <p class="venue">ICML 2026 Position Paper Track <span class="status status--accepted">Accepted</span></p>
-              <div class="pub-actions"><!-- Add links here later. --></div>
+              <div class="pub-actions">
+                <a class="pub-link" href="https://arxiv.org/pdf/2602.04056" target="_blank" rel="noopener noreferrer">Paper ↗</a>
+              </div>
             </div>
           </article>
 
@@ -860,7 +876,10 @@
               <h3>Towards Versatile Humanoid Table Tennis: Unified Reinforcement Learning with Prediction Augmentation</h3>
               <p class="authors">Muqun Hu*, <strong>Wenxi Chen*</strong>, Wenjing Li*, Falak Mandali, Zijian He, Renhong Zhang, Praveen Krisna, Katherine Christian, Leo Benaharon, Dizhi Ma, Karthik Ramani, Yan Gu</p>
               <p class="venue">IEEE ICRA 2026 <span class="status status--accepted">Accepted</span></p>
-              <div class="pub-actions"><!-- Add links here later. --></div>
+              <div class="pub-actions">
+                <a class="pub-link" href="https://arxiv.org/pdf/2509.21690" target="_blank" rel="noopener noreferrer">Paper ↗</a>
+                <a class="pub-link" href="https://www.youtube.com/watch?v=CfGj9J0wCEs&amp;feature=youtu.be" target="_blank" rel="noopener noreferrer">Video ↗</a>
+              </div>
             </div>
           </article>
 
@@ -869,7 +888,9 @@
               <h3>Model-agnostic Meta-learning for Adaptive Gait Phase and Terrain Geometry Estimation with Wearable Soft Sensors</h3>
               <p class="authors">Zenan Zhu*, <strong>Wenxi Chen*</strong>, Pei-Chun Kao, Janelle Clark, Lily Behnke, Rebecca Kramer-Bottiglio, Holly Yanco, Yan Gu</p>
               <p class="venue">IEEE Robotics and Automation Letters, 2026 <span class="status status--accepted">Accepted</span></p>
-              <div class="pub-actions"><!-- Add links here later. --></div>
+              <div class="pub-actions">
+                <a class="pub-link" href="https://www.eng.yale.edu/faboratory/publications/journal/2026/Zhu%20-%202026%20-%20Model%20agnostic%20meta%20learning%20for%20adaptive%20gait%20phase%20and%20terrain%20geometry%20estimation%20with%20wearable%20soft%20sensors.pdf" target="_blank" rel="noopener noreferrer">Paper ↗</a>
+              </div>
             </div>
           </article>
 
@@ -878,7 +899,9 @@
               <h3>Leveraging Perturbation Robustness to Enhance Out-of-Distribution Detection</h3>
               <p class="authors"><strong>Wenxi Chen</strong>, Raymond Yeh, Shaoshuai Mou, Yan Gu</p>
               <p class="venue">CVPR 2025 <span class="status status--accepted">Accepted</span></p>
-              <div class="pub-actions"><!-- Add links here later. --></div>
+              <div class="pub-actions">
+                <a class="pub-link" href="https://openaccess.thecvf.com/content/CVPR2025/papers/Chen_Leveraging_Perturbation_Robustness_to_Enhance_Out-of-Distribution_Detection_CVPR_2025_paper.pdf" target="_blank" rel="noopener noreferrer">Paper ↗</a>
+              </div>
             </div>
           </article>
 
@@ -910,57 +933,23 @@
             <span class="section-number">03</span>
             <h2>Academic Activities</h2>
           </div>
-          <p class="section-lead">
-            Teaching, course support, and professional service across robotics and mechanical engineering.
-          </p>
         </div>
 
-        <div class="teaching-grid">
-          <article class="panel teaching-card">
-            <span class="year">Spring 2024</span>
-            <h3>Statics</h3>
-            <p>Teaching Assistant · Purdue University</p>
-          </article>
-          <article class="panel teaching-card">
-            <span class="year">Fall 2023</span>
-            <h3>Machine Design Lab</h3>
-            <p>Teaching Assistant · Purdue University</p>
-          </article>
-          <article class="panel teaching-card">
-            <span class="year">Fall 2022</span>
-            <h3>Robotics Studio</h3>
-            <p>Course Assistant · Columbia University</p>
-          </article>
-          <article class="panel teaching-card">
-            <span class="year">Academic Service</span>
-            <h3>Peer Reviewer</h3>
-            <p>
-              IEEE Robotics and Automation Letters (RA-L), IEEE International Conference on Robotics and
-              Automation (ICRA), and IEEE International Conference on Humanoid Robots (Humanoids)
-            </p>
-          </article>
-        </div>
+        <ul>
+          <li>
+            <strong>Teaching:</strong> Statics (Teaching Assistant, Purdue University, Spring 2024);
+            Machine Design Lab (Teaching Assistant, Purdue University, Fall 2023); Robotics Studio
+            (Course Assistant, Columbia University, Fall 2022).
+          </li>
+          <li>
+            <strong>Reviewer Service:</strong> IEEE Robotics and Automation Letters (RA-L), IEEE
+            International Conference on Robotics and Automation (ICRA), and IEEE International Conference
+            on Humanoid Robots (Humanoids).
+          </li>
+        </ul>
       </div>
     </section>
 
-    <section class="section" id="talks">
-      <div class="container">
-        <div class="section-heading">
-          <div>
-            <span class="section-number">04</span>
-            <h2>Talks</h2>
-          </div>
-          <p class="section-lead">
-            Invited talks, research presentations, and conference appearances.
-          </p>
-        </div>
-
-        <div class="empty-state">
-          <h3>Talks will be added soon.</h3>
-          <p>This section is ready for presentation titles, venues, dates, slides, and recorded videos.</p>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer>
