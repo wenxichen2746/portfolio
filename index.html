@@ -475,8 +475,11 @@
       background: #e2f5e9;
     }
 
+    .publication--with-media {
+      grid-template-columns: 3rem minmax(0, 1fr) var(--publication-media-width, 16rem);
+    }
+
     .publication--featured {
-      grid-template-columns: 3rem minmax(0, 1.34fr) minmax(220px, 0.66fr);
       padding: 1.5rem;
       border-color: #d0b291;
     }
@@ -490,8 +493,7 @@
       width: 100%;
     }
 
-    .publication-media video,
-    .publication-media img {
+    .publication-media video {
       display: block;
       width: 100%;
       height: auto;
@@ -500,6 +502,15 @@
       border-radius: 0.7rem;
       background: #0d1424;
       box-shadow: 0 8px 24px rgba(20, 33, 61, 0.14);
+    }
+
+    .publication-media img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: 10.8rem;
+      object-fit: contain;
+      margin-left: auto;
     }
 
     .media-caption {
@@ -636,7 +647,7 @@
         grid-template-columns: 1fr;
       }
 
-      .publication--featured {
+      .publication--with-media {
         grid-template-columns: 3rem minmax(0, 1fr);
       }
 
@@ -658,7 +669,7 @@
         padding: 1.2rem;
       }
 
-      .publication--featured {
+      .publication--with-media {
         grid-template-columns: 1fr;
       }
 
@@ -823,7 +834,7 @@
         </ul>
 
         <div class="publication-list">
-          <article class="publication publication--featured">
+          <article class="publication publication--with-media publication--featured" style="--publication-media-width: 19.2rem;">
             <div>
               <h3>DREAM-Chunk: Test-time Scaling of Action Chunking with World Model for Stochastic Dynamics</h3>
               <p class="authors"><strong>Wenxi Chen</strong>, Kaidi Zhang, Chi Lin, Zhiyuan Zhang, Yu She, Yuejiang Liu, Raymond A. Yeh, Shaoshuai Mou, Yan Gu</p>
@@ -842,12 +853,15 @@
             </div>
           </article>
 
-          <article class="publication">
+          <article class="publication publication--with-media" style="--publication-media-width: 15.66rem;">
             <div>
               <h3>Rethink Action Chunking in VLA Through Human Motor Control</h3>
               <p class="authors"><strong>Wenxi Chen</strong>, Yuejiang Liu, Zijian He, Shaoshuai Mou, Yan Gu</p>
               <p class="venue"><span class="status">Under Review</span></p>
               <div class="pub-actions"><!-- Add links here later. --></div>
+            </div>
+            <div class="publication-media">
+              <img src="images/rethink_action_chunking.png" alt="Rethink Action Chunking paper overview" loading="lazy">
             </div>
           </article>
 
@@ -860,7 +874,7 @@
             </div>
           </article>
 
-          <article class="publication">
+          <article class="publication publication--with-media" style="--publication-media-width: 16.2rem;">
             <div>
               <h3>Position: Modular Safety Guardrails Are Necessary for Foundation-Model-Enabled Robots in the Real World</h3>
               <p class="authors">Joonkyung Kim*, <strong>Wenxi Chen*</strong>, Davood Soleymanzadeh*, Yi Ding, Xiangbo Gao, Zhengzhong Tu, Ruqi Zhang, Fan Fei, Sushant Veer, Yiwei Lyu, Minghui Zheng, Yan Gu</p>
@@ -869,9 +883,12 @@
                 <a class="pub-link" href="https://arxiv.org/pdf/2602.04056" target="_blank" rel="noopener noreferrer">Paper ↗</a>
               </div>
             </div>
+            <div class="publication-media">
+              <img src="images/ICML_2026_position.png" alt="ICML 2026 position paper overview" loading="lazy">
+            </div>
           </article>
 
-          <article class="publication">
+          <article class="publication publication--with-media" style="--publication-media-width: 19.2rem;">
             <div>
               <h3>Towards Versatile Humanoid Table Tennis: Unified Reinforcement Learning with Prediction Augmentation</h3>
               <p class="authors">Muqun Hu*, <strong>Wenxi Chen*</strong>, Wenjing Li*, Falak Mandali, Zijian He, Renhong Zhang, Praveen Krisna, Katherine Christian, Leo Benaharon, Dizhi Ma, Karthik Ramani, Yan Gu</p>
@@ -881,9 +898,15 @@
                 <a class="pub-link" href="https://www.youtube.com/watch?v=CfGj9J0wCEs&amp;feature=youtu.be" target="_blank" rel="noopener noreferrer">Video ↗</a>
               </div>
             </div>
+            <div class="publication-media">
+              <video autoplay muted loop playsinline controls preload="metadata" aria-label="Humanoid table tennis demonstration">
+                <source src="videos/icra2026_preview.mp4" type="video/mp4">
+                Your browser does not support embedded video.
+              </video>
+            </div>
           </article>
 
-          <article class="publication">
+          <article class="publication publication--with-media" style="--publication-media-width: 12.3rem;">
             <div>
               <h3>Model-agnostic Meta-learning for Adaptive Gait Phase and Terrain Geometry Estimation with Wearable Soft Sensors</h3>
               <p class="authors">Zenan Zhu*, <strong>Wenxi Chen*</strong>, Pei-Chun Kao, Janelle Clark, Lily Behnke, Rebecca Kramer-Bottiglio, Holly Yanco, Yan Gu</p>
@@ -892,9 +915,12 @@
                 <a class="pub-link" href="https://www.eng.yale.edu/faboratory/publications/journal/2026/Zhu%20-%202026%20-%20Model%20agnostic%20meta%20learning%20for%20adaptive%20gait%20phase%20and%20terrain%20geometry%20estimation%20with%20wearable%20soft%20sensors.pdf" target="_blank" rel="noopener noreferrer">Paper ↗</a>
               </div>
             </div>
+            <div class="publication-media">
+              <img src="images/RAL2026.png" alt="2026 IEEE Robotics and Automation Letters paper overview" loading="lazy">
+            </div>
           </article>
 
-          <article class="publication">
+          <article class="publication publication--with-media" style="--publication-media-width: 14.46rem;">
             <div>
               <h3>Leveraging Perturbation Robustness to Enhance Out-of-Distribution Detection</h3>
               <p class="authors"><strong>Wenxi Chen</strong>, Raymond Yeh, Shaoshuai Mou, Yan Gu</p>
@@ -902,6 +928,9 @@
               <div class="pub-actions">
                 <a class="pub-link" href="https://openaccess.thecvf.com/content/CVPR2025/papers/Chen_Leveraging_Perturbation_Robustness_to_Enhance_Out-of-Distribution_Detection_CVPR_2025_paper.pdf" target="_blank" rel="noopener noreferrer">Paper ↗</a>
               </div>
+            </div>
+            <div class="publication-media">
+              <img src="images/CVPR2025.png" alt="CVPR 2025 paper overview" loading="lazy">
             </div>
           </article>
 
