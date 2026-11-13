@@ -504,6 +504,14 @@
       box-shadow: 0 8px 24px rgba(20, 33, 61, 0.14);
     }
 
+    .publication-media video.video--figure {
+      aspect-ratio: 640 / 472;
+      object-fit: contain;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
     .publication-media img {
       display: block;
       width: auto;
@@ -862,6 +870,10 @@
 
         <ul class="news-list">
           <li class="news-item">
+            <time class="news-date" datetime="2026-09">Sep 2026</time>
+            <p>The position paper on action chunking I led has been accepted to <strong>NeurIPS 2026</strong>. See the <a href="missing-pieces/">project page</a>.</p>
+          </li>
+          <li class="news-item">
             <time class="news-date" datetime="2026-08">Aug 2026</time>
             <p>I will join <strong>Foundation Robotics</strong> in San Francisco, CA, this fall as a research intern.</p>
           </li>
@@ -922,18 +934,6 @@
             </div>
           </article>
 
-          <article class="publication publication--with-media" style="--publication-media-width: 15.66rem;">
-            <div>
-              <h3>Rethink Action Chunking in VLA Through Human Motor Control</h3>
-              <p class="authors"><strong>Wenxi Chen</strong>, Yuejiang Liu, Zijian He, Shaoshuai Mou, Yan Gu</p>
-              <p class="venue"><span class="status">Under Review</span></p>
-              <div class="pub-actions"><!-- Add links here later. --></div>
-            </div>
-            <div class="publication-media">
-              <img src="images/rethink_action_chunking.png" alt="Rethink Action Chunking paper overview" loading="lazy">
-            </div>
-          </article>
-
           <article class="publication publication--with-media" style="--publication-media-width: 19.2rem;">
             <div>
               <h3>Grounded Vision–Language Motion Planning Framework for Collaborative Robot Inscription</h3>
@@ -945,6 +945,22 @@
               <video autoplay muted loop playsinline controls preload="metadata" aria-label="Robot inscription demonstration">
                 <source src="videos/Inscription2026video.mp4" type="video/mp4">
                 Your browser does not support embedded video.
+              </video>
+            </div>
+          </article>
+
+          <article class="publication publication--with-media" style="--publication-media-width: 15.66rem;">
+            <div>
+              <h3>The Missing Pieces of Action Chunking: Insights from Human Motor Control</h3>
+              <p class="authors"><strong>Wenxi Chen</strong>, Yuejiang Liu, Zijian He, Shaoshuai Mou, Yan Gu</p>
+              <p class="venue">NeurIPS 2026 Position Paper <span class="status status--accepted">Accepted</span></p>
+              <div class="pub-actions">
+                <a class="pub-link" href="missing-pieces/">Project page →</a>
+              </div>
+            </div>
+            <div class="publication-media">
+              <video class="video--figure" autoplay muted loop playsinline preload="metadata" poster="images/missing_pieces_six_decoders.jpg" aria-label="Six action-chunk decoding rules tracking a moving target, with coherence and reactivity meters">
+                <source src="videos/missing_pieces_six_decoders.mp4" type="video/mp4">
               </video>
             </div>
           </article>

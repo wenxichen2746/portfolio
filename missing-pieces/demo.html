@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coherence vs Reactivity</title>
+<!--
+  Notes for agents reading this file (talk: "The Missing Pieces of Action Chunking", NeurIPS 2026).
+  - Policy: hand-written stand-in, sampleChunk(). Plans a quadratic Bezier from the agent to the
+    currently observed target (assumes a static target), bends left or right at random (multimodal
+    demos), adds Gaussian endpoint noise (sigma = 0.025), walks it at max speed into H = 20 velocity
+    actions. Inference latency d = 3 steps. All six decoders share the sampler and the random seed.
+  - Decoders: naive async, temporal ensembling, BID, RTC (soft), RTC (hard mask), adaptive switching.
+  - Metrics: coherence C = mean cos(a_t, a_{t+1}); tracking error E = mean ||p_t - g_t||.
+    Meters use the last 240 steps; trade-off plot uses the last 1500 steps after a 1500-step warm-up.
+  - Trail classes by turn angle between consecutive actions: smooth (cos >= 0.995, < 6 deg),
+    kink (0.95 to 0.995, 6 to 18 deg), sharp jitter (cos < 0.95, > 18 deg).
+  - URL params drive capture/metrics modes used to render the slide GIFs.
+-->
+
+<style>
+  :root {
+    --ink: #1f2933; --muted: #52606b; --bg: #ffffff; --card: #f3f4f6; --line: #d9dde3;
+    --cardinal: #8c1515; --accent: #8c1515;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --ink: #e8ecf0; --muted: #a9b4be; --bg: #14181d; --card: #1f252c; --line: #33404b; }
+  }
+  :root[data-theme="dark"] { --ink: #e8ecf0; --muted: #a9b4be; --bg: #14181d; --card: #1f252c; --line: #33404b; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 Calibri, "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1640px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 24px; margin: 4px 0 2px; }
+  p.lead { margin: 0 0 12px; color: var(--muted); }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 10px; }
+  .group { display: flex; align-items: center; gap: 6px; }
+  .group > span { color: var(--muted); font-size: 14px; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 5px 12px; border-radius: 8px; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  input[type=range] { width: 140px; }
+  canvas { width: 100%; height: auto; display: block; border-radius: 10px; background: #fff; }
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 12px; }
+  .notes div { background: var(--card); border-radius: 8px; padding: 8px 10px; font-size: 14px; }
+  .notes b { display: block; }
+  #out { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <p style="margin:0 0 6px;font-size:14px"><a href="./" style="color:var(--accent);font-weight:700;text-decoration:none">← The Missing Pieces of Action Chunking (project page)</a></p>
+  <h1>Coherence vs. reactivity: one policy, six decoding rules</h1>
+  <p class="lead">Every panel runs the same chunked policy (trained on static targets) against the same moving target. Only the rule that samples and executes chunks differs.</p>
+  <div class="controls">
+    <div class="group" role="group" aria-label="Target speed"><span>Target speed</span>
+      <button data-speed="static">Static</button><button data-speed="low">Low</button><button data-speed="medium">Medium</button><button data-speed="high">High</button>
+    </div>
+    <div class="group"><span>Execution horizon e</span><input id="eh" type="range" min="3" max="12" value="6"><b id="ehv">6</b></div>
+    <div class="group"><span>Playback</span><input id="pb" type="range" min="1" max="4" value="1"><b id="pbv">1×</b></div>
+    <div class="group"><button id="play">Pause</button><button id="reset">Restart</button></div>
+  </div>
+  <canvas id="cv" width="1600" height="900" aria-label="Six decoding methods tracking a moving target, with coherence and reactivity meters and a trade-off plot"></canvas>
+  <div class="notes" id="notes"></div>
+  <textarea id="out"></textarea>
+</main>
+<script>
+// ---------------- parameters ----------------
+const PRM = { H: 20, d: 3, amax: 0.012, N: 10, sigma: 0.025, steps: 8000 };
+// metric windows (simulation steps) and smoothness classes (cosine of consecutive actions)
+const WIN_METER = 240, WIN_PLOT = 1500, WARM = 1500;
+const SMOOTH_COS = 0.995, KINK_COS = 0.95;   // turn < 5.7 deg = smooth, 5.7-18.2 deg = kink, > 18.2 deg = sharp jitter
+const SPEED = { static: 0, low: 0.25, medium: 0.5, high: 0.8 };
+const METHODS = [
+  { key: 'naive', name: 'Naive async', color: '#E07A6F', tag: 'Independent chunks; executes from index d', side: 'none' },
+  { key: 'te', name: 'Temporal ensembling', color: '#7A8B99', tag: 'Averages all overlapping chunks (ALOHA)', side: 'coh' },
+  { key: 'rtc', name: 'RTC', color: '#3E9A6A', tag: 'Inpaints new chunk from the previous one', side: 'coh' },
+  { key: 'rtch', name: 'RTC (hard mask)', color: '#4A86C5', tag: 'Freezes only the committed prefix', side: 'coh' },
+  { key: 'bid', name: 'BID', color: '#5B4FA3', tag: 'Picks the most consistent of N samples', side: 'coh' },
+  { key: 'ada', name: 'Adaptive Chunking', color: '#E3A04F', tag: 'Re-infers every step; switches on deviation', side: 'rea' },
+];
+
+// ---------------- utilities ----------------
+function rng32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r) { let u = 0, v = 0; while (u === 0) u = r(); v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+const add = (a, b) => [a[0] + b[0], a[1] + b[1]], sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const mul = (a, s) => [a[0] * s, a[1] * s], nrm = a => Math.hypot(a[0], a[1]);
+function clipNorm(a, m) { const n = nrm(a); return n > m ? mul(a, m / n) : a; }
+function cosv(a, b) { const na = nrm(a), nb = nrm(b); if (na < 1e-6 || nb < 1e-6) return null; return (a[0] * b[0] + a[1] * b[1]) / (na * nb); }
+
+// ---------------- target path (shared by all methods) ----------------
+function makeTarget(speedKey, seed) {
+  const r = rng32(seed), T = [], v = SPEED[speedKey] * PRM.amax;
+  let p = [0.72, 0.5], th = Math.PI * 0.75, turn = 0, nextTurn = 0;
+  for (let t = 0; t < PRM.steps; t++) {
+    if (v === 0) {
+      if (t % 110 === 0 && t > 0) p = [0.15 + 0.7 * r(), 0.15 + 0.7 * r()];
+    } else {
+      if (t >= nextTurn) { turn = (r() - 0.5) * 0.09; nextTurn = t + 30 + Math.floor(r() * 50); if (r() < 0.35) th += Math.PI * (0.6 + 0.3 * r()); }
+      th += turn;
+      let np = add(p, [v * Math.cos(th), v * Math.sin(th)]);
+      if (np[0] < 0.1 || np[0] > 0.9) { th = Math.PI - th; np = add(p, [v * Math.cos(th), v * Math.sin(th)]); }
+      if (np[1] < 0.1 || np[1] > 0.9) { th = -th; np = add(p, [v * Math.cos(th), v * Math.sin(th)]); }
+      p = np;
+    }
+    T.push(p.slice());
+  }
+  return T;
+}
+
+// ---------------- the chunked policy (trained on static targets) ----------------
+// Demonstrations are multimodal: the expert curves around either the left or right side.
+function sampleChunk(p0, tgt, r, mode, sigma) {
+  if (mode === undefined || mode === null) mode = r() < 0.5 ? -1 : 1;
+  const goal = [tgt[0] + gauss(r) * (sigma ?? PRM.sigma), tgt[1] + gauss(r) * (sigma ?? PRM.sigma)];
+  const dv = sub(goal, p0), dist = nrm(dv);
+  const perp = dist > 1e-6 ? [-dv[1] / dist, dv[0] / dist] : [0, 0];
+  const bend = Math.min(0.5 * dist, 0.2);
+  const ctrl = add(mul(add(p0, goal), 0.5), mul(perp, mode * bend));
+  const pts = [], M = 120; let L = [0];
+  for (let i = 0; i <= M; i++) { const s = i / M; const q = add(add(mul(p0, (1 - s) * (1 - s)), mul(ctrl, 2 * s * (1 - s))), mul(goal, s * s)); pts.push(q); if (i) L.push(L[i - 1] + nrm(sub(q, pts[i - 1]))); }
+  const total = L[M], acts = [], pos = []; let walked = 0, prev = p0.slice(), j = 0;
+  for (let k = 0; k < PRM.H; k++) {
+    const remain = total - walked; const step = PRM.amax * Math.min(1, remain / 0.06);
+    walked = Math.min(total, walked + Math.max(step, 0));
+    while (j < M && L[j + 1] < walked) j++;
+    const f = j < M ? (walked - L[j]) / Math.max(1e-9, L[j + 1] - L[j]) : 0;
+    const q = j < M ? add(pts[j], mul(sub(pts[j + 1], pts[j]), f)) : goal.slice();
+    acts.push(sub(q, prev)); pos.push(q); prev = q;
+  }
+  return { acts, pos, mode, goal };
+}
+
+// ---------------- decoding rules ----------------
+class Agent {
+  constructor(m, seed, e) { this.m = m; this.r = rng32(seed); this.e = e; this.p = [0.25, 0.5]; this.cur = null; this.pending = []; this.trail = []; this.acts = []; this.errs = []; this.cands = []; this.flash = 0; this.te = []; this.switches = 0; this.marks = []; }
+  actAt(ch, t) { if (!ch) return null; const k = t - ch.t0; return k >= 0 && k < PRM.H ? ch.acts[k] : null; }
+  launch(t, T) {
+    const m = this.m.key, obsT = T[t], p = this.p.slice(), d = PRM.d, r = this.r;
+    let ch;
+    if (m === 'naive' || m === 'te' || m === 'ada') {
+      ch = sampleChunk(p, obsT, r);
+    } else if (m === 'rtc' || m === 'rtch') {
+      // plan from the position the committed prefix will reach; guide the overlap toward the old chunk
+      let pp = p.slice(); const prefix = [];
+      for (let k = 0; k < d; k++) { const a = this.actAt(this.cur, t + k) || [0, 0]; prefix.push(a); pp = add(pp, a); }
+      const keepMode = m === 'rtc' ? true : r() < 0.5;
+      const F = sampleChunk(pp, obsT, r, keepMode && this.cur ? this.cur.mode : null);
+      const tau = m === 'rtc' ? 7 : 1.2, acts = [];
+      for (let k = 0; k < PRM.H; k++) {
+        if (k < d) { acts.push(prefix[k]); continue; }
+        const fa = F.acts[k - d] || [0, 0], pa = this.actAt(this.cur, t + k);
+        if (pa) { const w = Math.exp(-(k - d) / tau); acts.push(add(mul(pa, w), mul(fa, 1 - w))); } else acts.push(fa);
+      }
+      ch = { acts, mode: F.mode };
+    } else if (m === 'bid') {
+      const cands = [];
+      for (let i = 0; i < PRM.N; i++) cands.push(sampleChunk(p, obsT, r, null, 0.045));
+      let best = cands[0], bs = Infinity;
+      if (this.cur) {
+        for (const c of cands) { let s = 0, n = 0; for (let k = d; k < PRM.H; k++) { const pa = this.actAt(this.cur, t + k); if (!pa) break; const wk = Math.exp(-(k - d) / 5); s += wk * nrm(sub(c.acts[k], pa)); n += wk; } s = n ? s / n : 0; if (s < bs) { bs = s; best = c; } }
+      }
+      this.cands = cands.map(c => ({ pos: c.pos, chosen: c === best }));
+      ch = best;
+    }
+    ch.t0 = t; ch.ready = t + d; ch.origin = p;
+    this.pending.push(ch);
+  }
+  step(t, T) {
+    const m = this.m.key, d = PRM.d;
+    const every = (m === 'te' || m === 'ada') ? 1 : this.e;
+    if (t % every === 0) this.launch(t, T);
+    // collect ready chunks
+    const ready = this.pending.filter(c => c.ready <= t); this.pending = this.pending.filter(c => c.ready > t);
+    let a = [0, 0];
+    if (m === 'te') {
+      for (const c of ready) this.te.push(c);
+      this.te = this.te.filter(c => t - c.t0 < PRM.H);
+      let s = [0, 0], ws = 0; const kk = 0.18;
+      this.te.forEach((c, i) => { const w = Math.exp(-kk * i); s = add(s, mul(c.acts[t - c.t0], w)); ws += w; });
+      if (ws > 0) a = mul(s, 1 / ws);
+      if (ready.length) this.cur = this.te[this.te.length - 1];
+    } else if (m === 'ada') {
+      for (const c of ready) {
+        if (!this.cur || t - this.cur.t0 >= PRM.H - 1) { this.cur = c; this.flash = 8; this.switches++; continue; }
+        let dev = 0, n = 0;
+        for (let k = t; k < t + 6; k++) { const ca = this.actAt(this.cur, k), na = this.actAt(c, k); if (ca && na) { dev += nrm(sub(ca, na)); n++; } }
+        dev = n ? dev / n / PRM.amax : 1;
+        if (dev > 0.55) { this.cur = c; this.flash = 8; this.switches++; }
+      }
+      a = this.actAt(this.cur, t) || [0, 0];
+    } else {
+      for (const c of ready) { this.cur = c; this.flash = 8; }
+      a = this.actAt(this.cur, t) || [0, 0];
+    }
+    a = clipNorm(a, PRM.amax * 1.15);
+    this.p = add(this.p, a);
+    this.p = [Math.min(0.98, Math.max(0.02, this.p[0])), Math.min(0.98, Math.max(0.02, this.p[1]))];
+    this.acts.push(a); this.trail.push(this.p.slice()); if (this.trail.length > 90) this.trail.shift();
+    this.errs.push(nrm(sub(this.p, T[t])));
+    if (this.flash === 8) this.marks.push({ p: this.p.slice(), t });
+    this.marks = this.marks.filter(mk => t - mk.t < 90);
+    if (this.flash > 0) this.flash--;
+  }
+  stats(win) {
+    const A = this.acts, E = this.errs, n = A.length, s = Math.max(1, n - win);
+    let cs = 0, cn = 0; for (let i = s; i < n; i++) { const c = cosv(A[i - 1], A[i]); if (c !== null) { cs += c; cn++; } }
+    let es = 0; for (let i = s; i < n; i++) es += E[i];
+    return { coh: cn ? cs / cn : 1, err: (es / Math.max(1, n - s)) };
+  }
+}
+
+// ---------------- simulation state ----------------
+let state;
+function init(speedKey, e) {
+  const T = makeTarget(speedKey, 7);
+  state = { speedKey, e, T, t: 0, agents: METHODS.map(m => new Agent(m, 1234, e)), ttrail: [] };
+  for (let k = 0; k < WARM; k++) simStep();   // warm up so the long-window averages start settled
+}
+function simStep() {
+  const { T } = state; const t = state.t;
+  for (const ag of state.agents) ag.step(t, T);
+  state.ttrail.push(T[t]); if (state.ttrail.length > 60) state.ttrail.shift();
+  state.t++;
+  if (state.t >= PRM.steps) init(state.speedKey, state.e);
+}
+
+// ---------------- drawing ----------------
+const cv = document.getElementById('cv'), cx = cv.getContext('2d');
+const FONT = 'Calibri, "Segoe UI", Arial, sans-serif';
+function smoothColor(c) { // c = cosine similarity
+  if (c === null) return [150, 150, 150];
+  if (c >= SMOOTH_COS) return [46, 160, 90];   // smooth step
+  if (c >= KINK_COS) return [235, 160, 40];     // kink
+  return [210, 50, 50];                         // sharp jitter
+}
+function rr(x, y, w, h, r) { cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
+const COH_LO = 0.75, COH_HI = 1.0, ERR_HI = 0.3;
+
+function drawPanel(ag, X, Y, W, Hh) {
+  const m = ag.m;
+  rr(X, Y, W, Hh, 12); cx.fillStyle = '#f3f4f6'; cx.fill();
+  cx.fillStyle = m.color; cx.font = `bold 21px ${FONT}`; cx.textBaseline = 'top'; cx.fillText(m.name, X + 14, Y + 10);
+  cx.fillStyle = '#52606b'; cx.font = `15px ${FONT}`; cx.fillText(m.tag, X + 14, Y + 36);
+  // arena
+  const ax = X + 14, ay = Y + 60, aw = W - 28, ah = Hh - 140;
+  rr(ax, ay, aw, ah, 8); cx.fillStyle = '#ffffff'; cx.fill(); cx.strokeStyle = '#d9dde3'; cx.lineWidth = 1; cx.stroke();
+  const P = q => [ax + q[0] * aw, ay + q[1] * ah];
+  cx.save(); rr(ax, ay, aw, ah, 8); cx.clip();
+  // target trail + target
+  const tt = state.ttrail;
+  for (let i = 1; i < tt.length; i++) { const a = P(tt[i - 1]), b = P(tt[i]); cx.strokeStyle = `rgba(47,95,196,${0.06 + 0.25 * i / tt.length})`; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(...a); cx.lineTo(...b); cx.stroke(); }
+  // candidates (BID)
+  if (m.key === 'bid') for (const c of ag.cands) { cx.strokeStyle = c.chosen ? 'rgba(91,79,163,0.0)' : 'rgba(120,120,120,0.28)'; cx.lineWidth = 1.5; cx.beginPath(); c.pos.forEach((q, i) => { const s = P(q); i ? cx.lineTo(...s) : cx.moveTo(...s); }); cx.stroke(); }
+  // TE: overlapping chunk predictions
+  if (m.key === 'te') for (const c of ag.te) { let q = ag.p.slice(); cx.strokeStyle = 'rgba(122,139,153,0.30)'; cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(...P(q)); for (let k = state.t - c.t0; k < PRM.H; k++) { if (k < 0) continue; q = add(q, c.acts[k]); cx.lineTo(...P(q)); } cx.stroke(); }
+  // current plan
+  if (ag.cur) { let q = ag.p.slice(); cx.fillStyle = m.color; for (let k = state.t - ag.cur.t0; k < PRM.H; k++) { if (k < 0) continue; q = add(q, ag.cur.acts[k]); const s = P(q); cx.globalAlpha = 0.85; cx.beginPath(); cx.arc(s[0], s[1], 3.2, 0, 7); cx.fill(); } cx.globalAlpha = 1; }
+  // agent trail coloured by smoothness
+  const tr = ag.trail, A = ag.acts, n = A.length;
+  for (let i = 1; i < tr.length; i++) { const ai = n - tr.length + i; const c = ai > 0 ? cosv(A[ai - 1], A[ai]) : 1; const col = smoothColor(c); const a = P(tr[i - 1]), b = P(tr[i]); cx.strokeStyle = `rgba(${col[0] | 0},${col[1] | 0},${col[2] | 0},${0.25 + 0.75 * i / tr.length})`; cx.lineWidth = 4; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(...a); cx.lineTo(...b); cx.stroke(); }
+  // chunk boundaries
+  for (const mk of ag.marks) { const s = P(mk.p); cx.fillStyle = '#fff'; cx.strokeStyle = m.color; cx.lineWidth = 2; cx.beginPath(); cx.arc(s[0], s[1], 4, 0, 7); cx.fill(); cx.stroke(); }
+  // target
+  const ts = P(state.T[Math.max(0, state.t - 1)]); cx.fillStyle = '#2f5fc4'; rr(ts[0] - 9, ts[1] - 9, 18, 18, 4); cx.fill();
+  // agent
+  const as = P(ag.p);
+  if (ag.flash > 0) { cx.strokeStyle = m.color; cx.globalAlpha = ag.flash / 8; cx.lineWidth = 3; cx.beginPath(); cx.arc(as[0], as[1], 10 + (8 - ag.flash) * 3, 0, 7); cx.stroke(); cx.globalAlpha = 1; }
+  cx.fillStyle = '#1f2933'; cx.beginPath(); cx.arc(as[0], as[1], 8, 0, 7); cx.fill(); cx.fillStyle = '#3ec46d'; cx.beginPath(); cx.arc(as[0], as[1], 5.5, 0, 7); cx.fill();
+  cx.restore();
+  // meters
+  const s = ag.stats(WIN_METER);
+  const mx = X + 14, mw = W - 28; let my = ay + ah + 12;
+  const coh = Math.max(0, Math.min(1, (s.coh - COH_LO) / (COH_HI - COH_LO))), rea = Math.max(0, Math.min(1, 1 - s.err / ERR_HI));
+  for (const [lab, v, col, val] of [['Coherence', coh, '#2e9f5a', s.coh.toFixed(2)], ['Reactivity', rea, '#2f5fc4', (s.err * 100).toFixed(1) + ' err']]) {
+    cx.fillStyle = '#1f2933'; cx.font = `bold 16px ${FONT}`; cx.textBaseline = 'middle'; cx.fillText(lab, mx, my + 10);
+    const bx = mx + 92, bw = mw - 92 - 66;
+    rr(bx, my + 2, bw, 16, 8); cx.fillStyle = '#e1e5ea'; cx.fill();
+    if (v > 0.01) { rr(bx, my + 2, Math.max(16, bw * v), 16, 8); cx.fillStyle = col; cx.fill(); }
+    cx.fillStyle = '#52606b'; cx.font = `14px ${FONT}`; cx.fillText(val, bx + bw + 8, my + 10);
+    my += 28;
+  }
+}
+
+function drawPareto(X, Y, W, Hh) {
+  rr(X, Y, W, Hh, 12); cx.fillStyle = '#f3f4f6'; cx.fill();
+  cx.fillStyle = '#1f2933'; cx.font = `bold 21px ${FONT}`; cx.textBaseline = 'top'; cx.fillText('The trade-off', X + 16, Y + 10);
+  cx.fillStyle = '#52606b'; cx.font = `15px ${FONT}`; cx.fillText(`Average over the last ${WIN_PLOT} steps`, X + 16, Y + 36);
+  const px = X + 70, py = Y + 80, pw = W - 100, ph = Hh - 240;
+  cx.fillStyle = '#fff'; rr(px, py, pw, ph, 6); cx.fill(); cx.strokeStyle = '#d9dde3'; cx.stroke();
+  // ideal corner
+  cx.fillStyle = 'rgba(140,21,21,0.08)'; cx.beginPath(); cx.moveTo(px + pw, py); cx.lineTo(px + pw - 120, py); cx.lineTo(px + pw, py + 120); cx.closePath(); cx.fill();
+  cx.fillStyle = '#8c1515'; cx.font = `bold 15px ${FONT}`; cx.textAlign = 'right'; cx.fillText('ideal', px + pw - 8, py + 8); cx.textAlign = 'left';
+  // axes labels
+  cx.fillStyle = '#1f2933'; cx.font = `bold 16px ${FONT}`; cx.textBaseline = 'top';
+  cx.fillText('Coherence  →  (smoother boundaries)', px, py + ph + 12);
+  cx.save(); cx.translate(px - 40, py + ph); cx.rotate(-Math.PI / 2); cx.fillText('Reactivity  →  (lower tracking error)', 0, 0); cx.restore();
+  const xr = [0.84, 1.0], yr = [0.02, 0.24];
+  const map = (c, e) => [px + (Math.min(xr[1], Math.max(xr[0], c)) - xr[0]) / (xr[1] - xr[0]) * pw, py + ph - (1 - (Math.min(yr[1], Math.max(yr[0], e)) - yr[0]) / (yr[1] - yr[0])) * ph];
+  const pts = state.agents.map(ag => { const s = ag.stats(WIN_PLOT); return { ag, s, xy: map(s.coh, s.err) }; });
+  for (const { ag, xy } of pts) { cx.fillStyle = ag.m.color; cx.beginPath(); cx.arc(xy[0], xy[1], 11, 0, 7); cx.fill(); cx.strokeStyle = '#fff'; cx.lineWidth = 2; cx.stroke(); }
+  // labels with simple vertical de-overlap
+  cx.font = `bold 15px ${FONT}`; cx.textBaseline = 'middle';
+  for (const side of [true, false]) {
+    const lab = pts.filter(o => (o.xy[0] > px + pw / 2) === side).map(o => ({ ...o, ly: o.xy[1] })).sort((a, b) => a.ly - b.ly);
+    for (let i = 1; i < lab.length; i++) if (lab[i].ly - lab[i - 1].ly < 22) lab[i].ly = lab[i - 1].ly + 22;
+    for (const o of lab) { cx.fillStyle = o.ag.m.color; cx.textAlign = side ? 'right' : 'left'; cx.fillText(o.ag.m.name, o.xy[0] + (side ? -16 : 16), o.ly); }
+  }
+  cx.textAlign = 'left';
+  cx.fillStyle = '#1f2933'; cx.font = `16px ${FONT}`; cx.textBaseline = 'top';
+  cx.fillText('Coherence   C = meanₜ cos(aₜ, aₜ₊₁)   (actions a)', X + 16, Y + Hh - 118);
+  cx.fillText('Tracking error   E = meanₜ ‖pₜ − gₜ‖   (agent p, target g)', X + 16, Y + Hh - 94);
+  cx.fillStyle = '#52606b'; cx.font = `italic 15px ${FONT}`;
+  cx.fillText('No single rule reaches the ideal corner once the target moves.', X + 16, Y + Hh - 52);
+}
+
+function draw() {
+  cx.setTransform(cv.width / 1600, 0, 0, cv.height / 900, 0, 0);
+  cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, 1600, 900);
+  cx.fillStyle = '#1f2933'; cx.font = `bold 30px ${FONT}`; cx.textBaseline = 'top';
+  cx.fillText('Same policy, six decoding rules', 24, 18);
+  const label = { static: 'Static target (respawns)', low: 'Low target speed', medium: 'Medium target speed', high: 'High target speed' }[state.speedKey];
+  cx.fillStyle = '#8c1515'; cx.font = `bold 24px ${FONT}`; cx.fillText(label, 500, 22);
+  cx.fillStyle = '#52606b'; cx.font = `18px ${FONT}`;
+  cx.textAlign = 'right'; cx.fillText(`prediction horizon H=${PRM.H} · execution horizon e=${state.e} · latency d=${PRM.d} · t=${state.t}`, 1576, 26); cx.textAlign = 'left';
+  // legend for trail
+  const lx = 24, ly = 862; cx.font = `15px ${FONT}`; cx.textBaseline = 'middle';
+  const items = [['#2f5fc4', 'target', true], ['#3ec46d', 'agent', true],
+    ['rgb(46,160,90)', 'smooth step (turn < 6°)', false], ['rgb(235,160,40)', 'kink (6–18°)', false], ['rgb(210,50,50)', 'sharp jitter (> 18°)', false]];
+  let xx = lx;
+  for (const [c, t, filled] of items) {
+    cx.beginPath(); cx.arc(xx + 7, ly, 6, 0, 7);
+    if (filled) { cx.fillStyle = c; cx.fill(); } else { cx.strokeStyle = c; cx.lineWidth = 3; cx.stroke(); }
+    cx.fillStyle = '#52606b'; cx.fillText(t, xx + 20, ly); xx += 20 + cx.measureText(t).width + 22;
+  }
+  cx.fillText(`turn = angle between consecutive actions · meters: last ${WIN_METER} steps · dots = rest of current chunk · rings = new chunk took over`, xx + 4, ly);
+  const W = 340, Hh = 380, gx = 12, x0 = 24, y0 = 72;
+  state.agents.forEach((ag, i) => drawPanel(ag, x0 + (i % 3) * (W + gx), y0 + Math.floor(i / 3) * (Hh + 12), W, Hh));
+  drawPareto(x0 + 3 * (W + gx) + 8, y0, 1600 - 24 - (x0 + 3 * (W + gx) + 8), Hh * 2 + 12);
+}
+
+// ---------------- modes: interactive, capture, metrics ----------------
+const Q = new URLSearchParams(location.search);
+if (Q.get('metrics')) {
+  const rows = [];
+  for (const sp of Object.keys(SPEED)) { init(sp, +(Q.get('e') || 6)); for (let t = 0; t < 1500; t++) simStep(); rows.push(sp + ': ' + state.agents.map(a => { const s = a.stats(1e9); return `${a.m.key} coh=${s.coh.toFixed(3)} err=${s.err.toFixed(3)}${a.m.key === 'ada' ? ' sw=' + a.switches : ''}`; }).join(' | ')); }
+  document.getElementById('out').textContent = rows.join('\n'); document.title = 'done';
+} else if (Q.get('capture')) {
+  const sc = +(Q.get('scale') || 0.8); cv.width = 1600 * sc; cv.height = 900 * sc;
+  init(Q.get('speed') || 'high', +(Q.get('e') || 6));
+  const frames = +(Q.get('frames') || 240), every = +(Q.get('every') || 2), warm = +(Q.get('warm') || 0), out = [];
+  for (let t = 0; t < warm; t++) simStep();
+  for (let f = 0; f < frames; f++) { for (let k = 0; k < every; k++) simStep(); draw(); out.push(cv.toDataURL('image/png')); }
+  document.getElementById('out').textContent = out.join('\n'); document.title = 'done';
+} else {
+  let speedKey = 'high', e = 6, playing = true, pb = 1;
+  const btns = [...document.querySelectorAll('[data-speed]')];
+  const setSpeed = k => { speedKey = k; btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.speed === k)); init(speedKey, e); };
+  btns.forEach(b => b.onclick = () => setSpeed(b.dataset.speed));
+  document.getElementById('eh').oninput = ev => { e = +ev.target.value; document.getElementById('ehv').textContent = e; init(speedKey, e); };
+  document.getElementById('pb').oninput = ev => { pb = +ev.target.value; document.getElementById('pbv').textContent = pb + '×'; };
+  document.getElementById('play').onclick = ev => { playing = !playing; ev.target.textContent = playing ? 'Pause' : 'Play'; };
+  document.getElementById('reset').onclick = () => init(speedKey, e);
+  document.getElementById('notes').innerHTML = METHODS.map(m => `<div><b style="color:${m.color}">${m.name}</b>${m.tag}</div>`).join('');
+  setSpeed('high');
+  let acc = 0, last = performance.now();
+  (function loop(now) { const dt = now - last; last = now; if (playing) { acc += dt * pb; while (acc > 33) { simStep(); acc -= 33; } } draw(); requestAnimationFrame(loop); })(last);
+}
+</script>
+</body>
+</html>
